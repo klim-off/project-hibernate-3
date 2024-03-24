@@ -10,7 +10,6 @@ import java.util.Set;
 @Table(name = "country", schema = "world")
 public class Country {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     @Column(length = 3)
     private String code;
