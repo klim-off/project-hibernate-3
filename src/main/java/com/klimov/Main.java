@@ -7,18 +7,22 @@ import com.klimov.dao.CountryDAO;
 import com.klimov.domain.City;
 import com.klimov.domain.Country;
 import com.klimov.domain.CountryLanguage;
+
 import com.klimov.redis.CityCountry;
 import com.klimov.redis.Language;
 import io.lettuce.core.RedisClient;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
 
@@ -47,28 +51,13 @@ private final CountryDAO countryDAO;
     public static void main(String[] args) {
         Main main = new Main();
         List<City> allCities = main.fetchData(main);
+
+        List<CityCountry> preparedData = main.transformData(allCities);
         main.shutdown();
 
     }
 
-    private List<City> fetchData(Main main) {
-        try (Session session = main.sessionFactory.getCurrentSession()) {
-            List<City> allCities = new ArrayList<>();
-            session.beginTransaction();
-            List<Country> countries = main.countryDAO.getAll();
-
-            int totalCount = main.cityDAO.getTotalCount();
-            int step = 500;
-            for (int i = 0; i < totalCount; i += step) {
-                allCities.addAll(main.cityDAO.getItems(i, step));
-            }
-            List<CityCountry> preparedData = main.transformData(allCities);
-            session.getTransaction().commit();
-            return allCities;
-        }
-    }
-
-    private List<CityCountry> transformData(List<City> allCities) {
+    private List<CityCountry> transformData(List<City> cities) {
         return cities.stream().map(city -> {
             CityCountry res = new CityCountry();
             res.setId(city.getId());
@@ -84,7 +73,7 @@ private final CountryDAO countryDAO;
             res.setCountryPopulation(country.getPopulation());
             res.setCountryRegion(country.getRegion());
             res.setCountrySurfaceArea(country.getSurfaceArea());
-            Set<CountryLanguage> countryLanguages = country.getLanguages();
+            Set<CountryLanguage> countryLanguages = country.getCountryLanguages();
             Set<Language> languages = countryLanguages.stream().map(cl -> {
                 Language language = new Language();
                 language.setLanguage(cl.getLanguage());
@@ -96,6 +85,21 @@ private final CountryDAO countryDAO;
 
             return res;
         }).collect(Collectors.toList());
+    }
+
+    private List<City> fetchData(Main main) {
+        try (Session session = main.sessionFactory.getCurrentSession()) {
+            List<City> allCities = new ArrayList<>();
+            session.beginTransaction();
+            List<Country> countries = main.countryDAO.getAll();
+            int totalCount = main.cityDAO.getTotalCount();
+            int step = 500;
+            for (int i = 0; i < totalCount; i += step) {
+                allCities.addAll(main.cityDAO.getItems(i, step));
+            }
+            session.getTransaction().commit();
+            return allCities;
+        }
     }
 
     private SessionFactory prepareRelationalDb() {

@@ -48,7 +48,7 @@ public class CountryLanguage {
         this.language = language;
     }
 
-    public boolean isOfficial() {
+    public boolean getOfficial() {
         return isOfficial;
     }
 
@@ -63,4 +63,6 @@ public class CountryLanguage {
     public void setPercentage(BigDecimal percentage) {
         this.percentage = percentage;
     }
+
+
 }

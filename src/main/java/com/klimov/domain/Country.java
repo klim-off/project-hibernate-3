@@ -1,7 +1,6 @@
 package com.klimov.domain;
 
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
 
 import java.math.BigDecimal;
 import java.util.Set;
