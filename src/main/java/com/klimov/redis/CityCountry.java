@@ -1,7 +1,6 @@
 package com.klimov.redis;
 
 import com.klimov.domain.Continent;
-import com.klimov.domain.CountryLanguage;
 
 import java.math.BigDecimal;
 import java.util.Set;
@@ -29,7 +28,7 @@ public class CityCountry {
 
     private Integer countryPopulation;
 
-    private Set<CountryLanguage> languages;
+    private Set<Language> languages;
 
     public Integer getId() {
         return id;
@@ -119,11 +118,11 @@ public class CityCountry {
         this.countryPopulation = countryPopulation;
     }
 
-    public Set<CountryLanguage> getLanguages() {
+    public Set<Language> getLanguages() {
         return languages;
     }
 
-    public void setLanguages(Set<CountryLanguage> languages) {
+    public void setLanguages(Set<Language> languages) {
         this.languages = languages;
     }
 }
